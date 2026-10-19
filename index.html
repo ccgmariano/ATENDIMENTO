@@ -34,9 +34,9 @@
 
   <script>
     /* =======================================================
-       ÁREA ADMINISTRÁVEL (Edite facilmente aqui depois)
+       ÁREA ADMINISTRÁVEL
        ======================================================= */
-    const WHATSAPP_NUMERO = "+5548999700481"; // Coloque o DDD + Telefone
+    const WHATSAPP_NUMERO = "5500999999999"; // DDD + Número
 
     const FLUXO = {
       // TELA INICIAL
@@ -55,33 +55,34 @@
         titulo: "Agendamento de Rotina",
         subtitulo: "Qual o principal motivo da visita?",
         opcoes: [
-          { texto: "Limpeza e avaliação geral", whatsMsg: "Olá! Gostaria de agendar uma limpeza e avaliação geral." },
-          { texto: "Retorno / Tratamento já iniciado", whatsMsg: "Olá! Já sou paciente e quero agendar meu retorno." }
+          { texto: "Limpeza e avaliação geral" },
+          { texto: "Retorno / Tratamento já iniciado" }
         ]
       },
       estetica: {
         titulo: "Estética / Sorriso",
         subtitulo: "Qual procedimento você tem interesse?",
         opcoes: [
-          { texto: "Clareamento dental", whatsMsg: "Olá! Gostaria de saber mais sobre clareamento dental." },
-          { texto: "Alinhadores invisíveis / Aparelho", whatsMsg: "Olá! Gostaria de saber sobre alinhadores invisíveis." },
-          { texto: "Facetas / Lentes de contato", whatsMsg: "Olá! Gostaria de informações sobre facetas e lentes." }
+          { texto: "Clareamento dental" },
+          { texto: "Alinhadores invisíveis / Aparelho" },
+          { texto: "Facetas / Lentes de contato" }
         ]
       },
       urgencia: {
         titulo: "Atendimento de Urgência",
         subtitulo: "Qual é a situação no momento?",
         opcoes: [
-          { texto: "Dor intensa ou dente quebrado", whatsMsg: "URGÊNCIA: Estou sentindo muita dor / quebrei um dente e preciso de horário emergencial.", urgente: true },
-          { texto: "Queda de prótese, coroa ou braquete", whatsMsg: "Olá! Tive um problema com meu dente/aparelho e preciso de um ajuste rápido." }
+          { texto: "Dor intensa ou dente quebrado", urgente: true },
+          { texto: "Queda de prótese, coroa ou braquete" }
         ]
       }
     };
 
     /* =======================================================
-       LÓGICA DO MENU
+       LÓGICA DO MENU COM HISTÓRICO DAS ESCOLHAS
        ======================================================= */
-    let historico = [];
+    let historicoNavegacao = [];
+    let escolhasFeitas = []; // Guarda o texto de cada botão clicado
     let telaAtual = "inicio";
 
     function renderizar(telaKey) {
@@ -99,23 +100,34 @@
 
         btn.onclick = () => {
           if (opcao.proximo) {
-            historico.push(telaKey);
+            // Avança para o próximo submenu guardando a escolha
+            historicoNavegacao.push(telaKey);
+            escolhasFeitas.push(opcao.texto);
             telaAtual = opcao.proximo;
             renderizar(telaAtual);
-          } else if (opcao.whatsMsg) {
-            const link = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(opcao.whatsMsg)}`;
+          } else {
+            // Opção final: monta o histórico completo e envia
+            const escolhasFinais = [...escolhasFeitas, opcao.texto];
+            
+            let mensagem = "Olá! Gostaria de atendimento via link da bio.\n\n*Resumo da triagem:*";
+            escolhasFinais.forEach(item => {
+              mensagem += `\n• ${item}`;
+            });
+
+            const link = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagem)}`;
             window.location.href = link;
           }
         };
         container.appendChild(btn);
       });
 
-      document.getElementById("btn-back").style.display = historico.length > 0 ? "block" : "none";
+      document.getElementById("btn-back").style.display = historicoNavegacao.length > 0 ? "block" : "none";
     }
 
     function goBack() {
-      if (historico.length > 0) {
-        telaAtual = historico.pop();
+      if (historicoNavegacao.length > 0) {
+        telaAtual = historicoNavegacao.pop();
+        escolhasFeitas.pop(); // Remove a última escolha feita
         renderizar(telaAtual);
       }
     }

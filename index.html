@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atendimento</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #f7f9fa; display: flex; justify-content: center; min-height: 100vh; padding: 20px; }
+    .container { width: 100%; max-width: 420px; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; min-height: 520px; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { font-size: 20px; color: #1a1a1a; margin-bottom: 6px; }
+    .header p { font-size: 14px; color: #666; }
+    .options { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
+    .btn { background: #ffffff; border: 1.5px solid #007aff; color: #007aff; padding: 14px 18px; border-radius: 12px; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; transition: 0.15s ease; display: flex; justify-content: space-between; align-items: center; text-decoration: none; }
+    .btn:active { background: #007aff; color: #fff; transform: scale(0.98); }
+    .btn-urgent { border-color: #d93025; color: #d93025; }
+    .btn-urgent:active { background: #d93025; color: #fff; }
+    .btn-back { margin-top: 16px; background: transparent; border: none; color: #888; font-size: 14px; cursor: pointer; text-align: center; padding: 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div>
+      <div class="header">
+        <h1 id="title">Atendimento Odontológico</h1>
+        <p id="subtitle">Selecione uma opção abaixo:</p>
+      </div>
+      <div id="options-container" class="options"></div>
+    </div>
+    <button id="btn-back" class="btn-back" style="display: none;" onclick="goBack()">← Voltar</button>
+  </div>
+
+  <script>
+    /* =======================================================
+       ÁREA ADMINISTRÁVEL (Edite facilmente aqui depois)
+       ======================================================= */
+    const WHATSAPP_NUMERO = "5500999999999"; // Coloque o DDD + Telefone
+
+    const FLUXO = {
+      // TELA INICIAL
+      inicio: {
+        titulo: "Como podemos ajudar hoje?",
+        subtitulo: "Escolha uma das opções para continuar:",
+        opcoes: [
+          { texto: "Agendamento de Rotina", proximo: "rotina" },
+          { texto: "Estética / Sorriso", proximo: "estetica" },
+          { texto: "Urgência / Dor", proximo: "urgencia", urgente: true }
+        ]
+      },
+
+      // SUBMENUS
+      rotina: {
+        titulo: "Agendamento de Rotina",
+        subtitulo: "Qual o principal motivo da visita?",
+        opcoes: [
+          { texto: "Limpeza e avaliação geral", whatsMsg: "Olá! Gostaria de agendar uma limpeza e avaliação geral." },
+          { texto: "Retorno / Tratamento já iniciado", whatsMsg: "Olá! Já sou paciente e quero agendar meu retorno." }
+        ]
+      },
+      estetica: {
+        titulo: "Estética / Sorriso",
+        subtitulo: "Qual procedimento você tem interesse?",
+        opcoes: [
+          { texto: "Clareamento dental", whatsMsg: "Olá! Gostaria de saber mais sobre clareamento dental." },
+          { texto: "Alinhadores invisíveis / Aparelho", whatsMsg: "Olá! Gostaria de saber sobre alinhadores invisíveis." },
+          { texto: "Facetas / Lentes de contato", whatsMsg: "Olá! Gostaria de informações sobre facetas e lentes." }
+        ]
+      },
+      urgencia: {
+        titulo: "Atendimento de Urgência",
+        subtitulo: "Qual é a situação no momento?",
+        opcoes: [
+          { texto: "Dor intensa ou dente quebrado", whatsMsg: "URGÊNCIA: Estou sentindo muita dor / quebrei um dente e preciso de horário emergencial.", urgente: true },
+          { texto: "Queda de prótese, coroa ou braquete", whatsMsg: "Olá! Tive um problema com meu dente/aparelho e preciso de um ajuste rápido." }
+        ]
+      }
+    };
+
+    /* =======================================================
+       LÓGICA DO MENU
+       ======================================================= */
+    let historico = [];
+    let telaAtual = "inicio";
+
+    function renderizar(telaKey) {
+      const etapa = FLUXO[telaKey];
+      document.getElementById("title").innerText = etapa.titulo;
+      document.getElementById("subtitle").innerText = etapa.subtitulo;
+
+      const container = document.getElementById("options-container");
+      container.innerHTML = "";
+
+      etapa.opcoes.forEach(opcao => {
+        const btn = document.createElement("button");
+        btn.className = `btn ${opcao.urgente ? "btn-urgent" : ""}`;
+        btn.innerHTML = `<span>${opcao.texto}</span> <span>→</span>`;
+
+        btn.onclick = () => {
+          if (opcao.proximo) {
+            historico.push(telaKey);
+            telaAtual = opcao.proximo;
+            renderizar(telaAtual);
+          } else if (opcao.whatsMsg) {
+            const link = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(opcao.whatsMsg)}`;
+            window.location.href = link;
+          }
+        };
+        container.appendChild(btn);
+      });
+
+      document.getElementById("btn-back").style.display = historico.length > 0 ? "block" : "none";
+    }
+
+    function goBack() {
+      if (historico.length > 0) {
+        telaAtual = historico.pop();
+        renderizar(telaAtual);
+      }
+    }
+
+    renderizar("inicio");
+  </script>
+</body>
+</html>

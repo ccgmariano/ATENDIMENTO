@@ -3,20 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atendimento</title>
+  <title>Atendimento Odontológico</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f7f9fa; display: flex; justify-content: center; min-height: 100vh; padding: 20px; }
-    .container { width: 100%; max-width: 420px; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; min-height: 520px; }
+    
+    /* Fundo suave sem imagem */
+    body { 
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      display: flex; 
+      justify-content: center; 
+      min-height: 100vh; 
+      padding: 20px; 
+    }
+
+    /* Caixa principal */
+    .container { 
+      width: 100%; 
+      max-width: 420px; 
+      background: #ffffff;
+      border-radius: 16px; 
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08); 
+      padding: 24px; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between; 
+      min-height: 520px; 
+    }
+    
     .header { text-align: center; margin-bottom: 24px; }
-    .header h1 { font-size: 20px; color: #1a1a1a; margin-bottom: 6px; }
-    .header p { font-size: 14px; color: #666; }
+    .header h1 { font-size: 22px; color: #1a1a1a; margin-bottom: 8px; }
+    .header p { font-size: 15px; color: #555; }
     .options { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-    .btn { background: #ffffff; border: 1.5px solid #007aff; color: #007aff; padding: 14px 18px; border-radius: 12px; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; transition: 0.15s ease; display: flex; justify-content: space-between; align-items: center; text-decoration: none; }
+    
+    /* Botões */
+    .btn { 
+      background: #ffffff; 
+      border: 1.5px solid #007aff; 
+      color: #007aff; 
+      padding: 16px 18px; 
+      border-radius: 12px; 
+      font-size: 15px; 
+      font-weight: 600; 
+      text-align: left; 
+      cursor: pointer; 
+      transition: 0.15s ease; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      text-decoration: none; 
+    }
     .btn:active { background: #007aff; color: #fff; transform: scale(0.98); }
     .btn-urgent { border-color: #d93025; color: #d93025; }
     .btn-urgent:active { background: #d93025; color: #fff; }
-    .btn-back { margin-top: 16px; background: transparent; border: none; color: #888; font-size: 14px; cursor: pointer; text-align: center; padding: 8px; }
+    .btn-back { margin-top: 16px; background: transparent; border: none; color: #666; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; padding: 10px; }
   </style>
 </head>
 <body>
@@ -24,8 +63,8 @@
   <div class="container">
     <div>
       <div class="header">
-        <h1 id="title">Atendimento Odontológico</h1>
-        <p id="subtitle">Selecione uma opção abaixo:</p>
+        <h1 id="title">Bem-vindo(a)!</h1>
+        <p id="subtitle">Carregando...</p>
       </div>
       <div id="options-container" class="options"></div>
     </div>
@@ -36,53 +75,46 @@
     /* =======================================================
        ÁREA ADMINISTRÁVEL
        ======================================================= */
-    const WHATSAPP_NUMERO = "5548999700481"; // DDD + Número
+    const WHATSAPP_NUMERO = "5558999700481"; // DDD + Número (Verifique se o DDD 58 está correto)
 
     const FLUXO = {
       // TELA INICIAL
       inicio: {
-        titulo: "Bem-vindo!!",
-        subtitulo: "Escolha uma das opções para continuar:",
+        titulo: "Como podemos ajudar hoje?",
+        subtitulo: "Escolha a opção que melhor descreve seu momento:",
         opcoes: [
-          { texto: "Agendamento de Rotina", proximo: "rotina" },
-          { texto: "Estética / Sorriso", proximo: "estetica" },
-          { texto: "Urgência / Dor", proximo: "urgencia", urgente: true }
+          { texto: "🔴 Estou com dor ou urgência", whatsMsg: "URGÊNCIA: Olá! Estou com dor / quebrei um dente e preciso de atendimento o mais rápido possível.", urgente: true },
+          { texto: "👤 Já sou paciente", proximo: "paciente" },
+          { texto: "✨ É minha primeira vez aqui", proximo: "novo" }
         ]
       },
 
       // SUBMENUS
-      rotina: {
-        titulo: "Agendamento de Rotina",
-        subtitulo: "Qual o principal motivo da visita?",
+      paciente: {
+        titulo: "Que bom ter você de volta!",
+        subtitulo: "O que você precisa hoje?",
         opcoes: [
-          { texto: "Limpeza e avaliação geral" },
-          { texto: "Retorno / Tratamento já iniciado" }
+          { texto: "Agendar retorno ou manutenção", whatsMsg: "Olá! Já sou paciente e gostaria de agendar meu retorno/manutenção." },
+          { texto: "Problema com meu tratamento atual", whatsMsg: "Olá! Sou paciente e tive um imprevisto com meu tratamento/aparelho. Gostaria de uma avaliação." },
+          { texto: "Limpeza de rotina", whatsMsg: "Olá! Já sou paciente e quero agendar minha limpeza de rotina para manter a saúde em dia." }
         ]
       },
-      estetica: {
-        titulo: "Estética / Sorriso",
-        subtitulo: "Qual procedimento você tem interesse?",
+      
+      novo: {
+        titulo: "Seja muito bem-vindo(a)!",
+        subtitulo: "Qual o seu principal objetivo conosco?",
         opcoes: [
-          { texto: "Clareamento dental" },
-          { texto: "Alinhadores invisíveis / Aparelho" },
-          { texto: "Facetas / Lentes de contato" }
-        ]
-      },
-      urgencia: {
-        titulo: "Atendimento de Urgência",
-        subtitulo: "Qual é a situação no momento?",
-        opcoes: [
-          { texto: "Dor intensa ou dente quebrado", urgente: true },
-          { texto: "Queda de prótese, coroa ou braquete" }
+          { texto: "Transformar meu sorriso (Estética)", whatsMsg: "Olá! Conheci o trabalho pelo Instagram. Tenho interesse em melhorar a estética do meu sorriso e quero entender as opções. Como funciona a primeira consulta?" },
+          { texto: "Repor dentes perdidos (Implantes)", whatsMsg: "Olá! Conheci o consultório pelo Instagram. Gostaria de saber mais sobre a reposição de dentes e agendar uma avaliação inicial." },
+          { texto: "Check-up preventivo e limpeza", whatsMsg: "Olá! Gostaria de agendar uma primeira consulta para um check-up geral e limpeza." }
         ]
       }
     };
 
     /* =======================================================
-       LÓGICA DO MENU COM HISTÓRICO DAS ESCOLHAS
+       LÓGICA DO MENU
        ======================================================= */
     let historicoNavegacao = [];
-    let escolhasFeitas = []; // Guarda o texto de cada botão clicado
     let telaAtual = "inicio";
 
     function renderizar(telaKey) {
@@ -100,21 +132,12 @@
 
         btn.onclick = () => {
           if (opcao.proximo) {
-            // Avança para o próximo submenu guardando a escolha
             historicoNavegacao.push(telaKey);
-            escolhasFeitas.push(opcao.texto);
             telaAtual = opcao.proximo;
             renderizar(telaAtual);
-          } else {
-            // Opção final: monta o histórico completo e envia
-            const escolhasFinais = [...escolhasFeitas, opcao.texto];
-            
-            let mensagem = "Olá! Gostaria de atendimento via link da bio.\n\n*Resumo da triagem:*";
-            escolhasFinais.forEach(item => {
-              mensagem += `\n• ${item}`;
-            });
-
-            const link = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagem)}`;
+          } else if (opcao.whatsMsg) {
+            // Usa a mensagem de marketing estratégica pronta para enviar
+            const link = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(opcao.whatsMsg)}`;
             window.location.href = link;
           }
         };
@@ -127,7 +150,6 @@
     function goBack() {
       if (historicoNavegacao.length > 0) {
         telaAtual = historicoNavegacao.pop();
-        escolhasFeitas.pop(); // Remove a última escolha feita
         renderizar(telaAtual);
       }
     }
